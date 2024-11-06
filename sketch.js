@@ -3,7 +3,7 @@ let recorder;
 let soundFile; // file to save audio
 let recording = false;
 let isPlaying = false;
-let recordingTime = 2; // recording time in seconds
+let recordingTime = 5; // recording time in seconds
 
 let mountainSpeed = 2;  // mountain speed
 let cloudSpeed = 1;     // cloud speed
@@ -45,10 +45,16 @@ function setup() {
   plane = new Plane(); // create plane
 }
 
-function draw() {
-  background(220);
 
-  if (recording) {
+function draw() {
+  background(220); textSize(32);
+  if (!recording && !isPlaying && soundFile.duration() === 0) {
+    fill(0);
+    textSize(32);
+    textAlign(CENTER, CENTER);
+    text("Click to start recording. Talk for 8 seconds.", width / 2, height / 2); // centered text
+  } else if (recording) {
+    // text during recording
     fill(255, 0, 0);
     textSize(32);
     textAlign(CENTER, CENTER);
@@ -61,7 +67,7 @@ function draw() {
       cloudOffsets[i][0] -= cloudSpeed; // move clouds to the left
       if (cloudOffsets[i][0] < -200) {
         cloudOffsets[i][0] = width + random(200, 400); // new x position off-canvas
-        cloudOffsets[i][1] = random(50, 200); // new random y position
+        cloudOffsets[i][1] = random(50, 100); // new random y position
       }
       drawClouds(cloudOffsets[i][0], cloudOffsets[i][1]);
     }
@@ -77,9 +83,16 @@ function draw() {
 
     // calculate pitch and adjust plane position
     let spectrum = fft.analyze();
-    let pitch = fft.getCentroid(); // calculate dominant frequency (pitch)
-    let normalizedPitch = map(pitch, 0, 10000, height, 0); // normalize pitch to canvas height
-    plane.y = normalizedPitch; // set plane height based on pitch
+    // let pitch = fft.getCentroid(); // calculate dominant frequency (pitch)
+    // let normalizedPitch = map(pitch, 0, 10000, height, 0); // normalize pitch to canvas height
+    // plane.y = normalizedPitch; // set plane height based on pitch
+    let pitch = fft.getCentroid(); // calc dominant frequency
+    let pitchRange = 200; // range from center
+
+    // map around canvas center
+    let normalizedPitch = map(pitch, 0, 10000, -pitchRange, pitchRange);
+    plane.y = height / 1.5 + normalizedPitch; // plane position
+
 
     // display and fly the plane
     plane.show();
@@ -130,21 +143,44 @@ function drawMountains(offset) {
 class Plane {
   constructor() {
     this.x = width / 2; // center of canvas
-    this.y = 500; // above mountains
-    this.speedx = 2;     // speed in x-direction
+    this.y = 0; // above mountains
+    this.speedx = 0;     // speed in x-direction
     this.speedy = 0;     // no movement in y-direction
   }
   show() {
-    fill(120);
-    noStroke();
-    triangle(this.x - 15, this.y, this.x + 15, this.y, this.x + 18, this.y - 60);
+
+    // //nose of plane
+     fill(120);
+     noStroke();
+
+    // wing upwards
+    triangle(this.x + 15, this.y, this.x - 15, this.y, this.x - 18, this.y - 60);
+
+    // plane body
     rectMode(CENTER);
-    rect(this.x, this.y, 100, 30, 50, 0, 0, 20);
+    rect(this.x+ 30, this.y, 120, 30, 0, 50, 20, 0);
+
+    // cockpit window
     fill(255);
-    rect(this.x - 30, this.y - 5, 17, 5);
+    rect(this.x + 75, this.y - 5, 15, 5, 0, 4, 0, 0);
+
+    // passenger windows
+    fill(255);    
+    rect(this.x + 48, this.y - 5, 5, 5, 4);
+    rect(this.x + 40, this.y - 5, 5, 5, 4);
+    rect(this.x + 32, this.y - 5, 5, 5, 4);
+    rect(this.x + 24, this.y - 5, 5, 5, 4);    
+    rect(this.x + 16, this.y - 5, 5, 5, 4);
+    // rect(this.x + 8, this.y - 5, 5, 5, 4);
+    // rect(this.x, this.y - 5, 5, 5, 4);
+
+    // wing downwards
     fill(120);
-    triangle(this.x - 15, this.y, this.x + 15, this.y, this.x + 30, this.y + 80);
-    triangle(this.x + 35, this.y + 15, this.x + 65, this.y - 40, this.x + 65, this.y + 15);
+    triangle(this.x + 15, this.y, this.x - 15, this.y, this.x - 30, this.y + 80);
+
+    // rear wing
+    triangle(this.x - 10, this.y + 15, this.x - 45, this.y - 50, this.x - 45, this.y + 15);
+    
   }
   fly() {
     this.x += this.speedx;
