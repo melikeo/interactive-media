@@ -3,7 +3,7 @@ let recorder;
 let soundFile; // file to save audio
 let recording = false;
 let isPlaying = false;
-let recordingTime = 1; // recording time in seconds
+let recordingTime = 5; // recording time in seconds
 
 let mountainSpeed = 2;  // mountain speed
 let cloudSpeed = 1;     // cloud speed
@@ -145,7 +145,7 @@ function draw() {
     fill(0);
     textSize(32);
     textAlign(CENTER, CENTER);
-    text("Click to start recording. Talk for 8 seconds.", width / 2, height / 2); // centered text
+    text("Use the + and - keys to change the recording time \n (1-60s). \n\n Click to start recording. \n\n Talk for " + recordingTime + " seconds.", width / 2, height / 2); // centered text
     //input.show(); 
   } else if (recording) {
     // text during recording
@@ -196,7 +196,7 @@ function draw() {
 
     let level = amplitude.getLevel();
     //let particleSize = map(pitch, pitchMin, pitchMax, 5, 20); // particle size depending on frequency
-    let particleSize = map(level, 0, 1, 5, 20); //particle size depending on volume
+    let particleSize = map(level, 0, 1,  5, 50); //particle size depending on volume
 
     // create new particles at plane
     particles.push(new Particle(plane.x - 20, plane.y-40, particleSize)); // top wing exhaust
@@ -237,8 +237,8 @@ function drawClouds(xOffset, yOffset) {
   let cloudSize = map(level, 0, 1, 100, 200); // size of clouds based on volume
   
   fill(255, 255, 255, 200); // white, semi-transparent clouds
+  
   ellipse(xOffset, yOffset, cloudSize, cloudSize * 0.6); // cloud 1
-
   ellipse(xOffset + 40, yOffset, cloudSize * 0.8, cloudSize * 0.5); // cloud 2
   ellipse(xOffset - 40, yOffset, cloudSize * 0.8, cloudSize * 0.5); // cloud 3
 
