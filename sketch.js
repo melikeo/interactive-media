@@ -359,7 +359,14 @@ function startRecording() {
 function stopRecording() {
   recorder.stop();
   recording = false;
-  playRecording();
+
+  setTimeout(() => { // 
+    if (soundFile.duration() > 0) {
+      playRecording();
+    } else {
+      console.error("Recording is empty or failed.");
+    }
+  }, 1000); // timeout for 1000ms to let file load
   //input.hide();
   daytimeButton.show();
 }
@@ -381,11 +388,19 @@ function mousePressed() {
 
 // play recording
 function playRecording() {
-  soundFile.loop(); // loop sound playback
-  fft.setInput(soundFile); // set FFT analyzer to recording
-  isPlaying = true;
-  //input.hide();
-  daytimeButton.show();
+  if (soundFile.duration > 0) {
+    soundFile.loop(); // loop sound playback
+    fft.setInput(soundFile); // set FFT analyzer to recording
+    isPlaying = true;
+
+  }
+  else {
+    console.error("Soundfile is empty or invalid.");
+  }  
+    //input.hide();
+    daytimeButton.show();
+
+
 }
 
 function keyPressed() {
