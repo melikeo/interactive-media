@@ -348,9 +348,15 @@ class Plane {
 
 // start audio recording
 function startRecording() {
-  recorder.record(soundFile); // record audio
-  recording = true;
-  setTimeout(stopRecording, recordingTime * 1000);
+  if (mic.enabled) {
+    recorder.record(soundFile); // record audio
+    recording = true;
+    setTimeout(stopRecording, recordingTime * 1000);    
+  }
+  else {
+    console.error("Mic is not ready.");
+  }
+  
   daytimeButton.hide()
   //input.hide()
 }
