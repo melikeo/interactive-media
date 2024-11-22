@@ -348,15 +348,9 @@ class Plane {
 
 // start audio recording
 function startRecording() {
-  if (mic.enabled) {
-    recorder.record(soundFile); // record audio
-    recording = true;
-    setTimeout(stopRecording, recordingTime * 1000);    
-  }
-  else {
-    console.error("Mic is not ready.");
-  }
-  
+  recorder.record(soundFile); // record audio
+  recording = true;
+  setTimeout(stopRecording, recordingTime * 1000);
   daytimeButton.hide()
   //input.hide()
 }
@@ -365,14 +359,7 @@ function startRecording() {
 function stopRecording() {
   recorder.stop();
   recording = false;
-
-  setTimeout(() => { // 
-    if (soundFile.duration() > 0) {
-      playRecording();
-    } else {
-      console.error("Recording is empty or failed.");
-    }
-  }, 1000); // timeout for 1000ms to let file load
+  playRecording();
   //input.hide();
   daytimeButton.show();
 }
@@ -394,19 +381,11 @@ function mousePressed() {
 
 // play recording
 function playRecording() {
-  if (soundFile.duration > 0) {
-    soundFile.loop(); // loop sound playback
-    fft.setInput(soundFile); // set FFT analyzer to recording
-    isPlaying = true;
-
-  }
-  else {
-    console.error("Soundfile is empty or invalid.");
-  }  
-    //input.hide();
-    daytimeButton.show();
-
-
+  soundFile.loop(); // loop sound playback
+  fft.setInput(soundFile); // set FFT analyzer to recording
+  isPlaying = true;
+  //input.hide();
+  daytimeButton.show();
 }
 
 function keyPressed() {
